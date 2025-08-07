@@ -1,1 +1,1 @@
-FLAG{you_captured_the_flag!}
+FLAG{go_take_a_coffe!}
