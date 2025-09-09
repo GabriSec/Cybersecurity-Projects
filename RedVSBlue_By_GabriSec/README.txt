@@ -63,4 +63,4 @@ A terminal-based Red vs Blue simulation showcasing core cybersecurity defense te
 
     Privilege escalation simulation with sudo_su
 
-🔒 Built for educational use & portfolio demonstration.
+🔒 Built for educational use.
