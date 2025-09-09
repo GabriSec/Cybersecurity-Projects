@@ -18,7 +18,7 @@ A terminal-based Red vs Blue simulation showcasing core cybersecurity defense te
 ├────────────┬────────────┬──────────┬────────┤
 │ Username │ Password │ 2FA Code │ Admin? │
 ├────────────┼────────────┼──────────┼────────┤
-│ user1 │ changeme │ 654321 │ ❌ │
+│ user1 │ changeme │ iuser93 │ ❌ │
 │ admin │ letmein123 │ 123456 │ ✅ │
 └────────────┴────────────┴──────────┴────────┘
 
