@@ -5,7 +5,7 @@ It captures live packets, logs them into a CSV file, and provides a SOC-style da
 
 
 
-FEATURES
+FEATURES:
 
 -Live Packet Capture
 
@@ -39,7 +39,7 @@ FEATURES
 
 
 
-INSTALLATION AND SETUP
+INSTALLATION AND SETUP:
 
 1. Clone the repo
 
@@ -64,3 +64,25 @@ pip install -r requirements.txt
 Register a free account at https://dev.maxmind.com
 Download GeoLite2-City.mmdb.
 Place it inside the data/ folder:
+
+
+USAGE:
+
+1. Start packet capture (requires sudo/admin privileges)
+
+sudo python traffic_analyzer.py
+
+This will generate/update data/packets.csv.
+
+
+2. Start the SOC dashboard
+
+streamlit run dashboard.py
+
+Open your browser at:
+http://localhost:8501
+
+
+PUT IT ON GOOD USE.
+
+
