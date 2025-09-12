@@ -1,4 +1,4 @@
-# RedVsBlue_By_GabriSec 🛡️
+# RedVsBlue_By_GabriSec_CTF 🛡️
 
 A terminal-based Red vs Blue simulation showcasing core cybersecurity defense techniques:
 - 2FA authentication, honeypots, reverse shells, IP blocking, privilege escalation, and SIEM log monitoring.
