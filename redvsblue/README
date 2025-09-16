@@ -1,0 +1,229 @@
+_____Red vs Blue Simulation Tool_____
+
+Portfolio Demonstration — Educational Purpose Only
+
+
+OVERVIEW
+
+
+The Red vs Blue Simulation Tool is an educational cybersecurity project designed to simulate a Blue Team server environment and basic SOC (Security Operations Center) logging for learning and portfolio purposes.
+
+The tool demonstrates fundamental concepts such as:
+
+Authentication mechanisms (username/password + MFA)
+
+Session management
+
+File access control and logging
+
+Network security simulation (honeypots, blocked IPs)
+
+SIEM-style logging
+
+⚠️ Important: This project is a simulation for educational purposes. All passwords, MFA codes, and security measures are intentionally simple and not suitable for production.
+
+  
+FEATURES
+
+
+1. Blue Team Server
+
+Listens for incoming client connections over TCP.
+
+Requires authentication with username/password and a 2FA code.
+
+Maintains active sessions and distinguishes between admin and user privileges.
+
+
+2. Authentication
+
+
+Supports multiple login attempts with configurable max attempts.
+
+Temporarily blocks IPs exceeding failed login attempts.
+
+Provides simple sudo-like privilege escalation (sudo_su) for educational purposes.
+
+
+3. Command Shell
+
+
+Authenticated users gain access to a simulated secure shell with the following commands:
+
+Command	| Description	| Admin Only
+
+| Command                     | Description                                          | Admin Only |
+| --------------------------- | ---------------------------------------------------- | ---------- |
+| `whoami`                    | Show current user and IP                             | ❌          |
+| `os_info`                   | Show system banner                                   | ❌          |
+| `list_files`                | List files in secure directory                       | ❌          |
+| `read_file <file>`          | Read a file (restricted files marked `[restricted]`) | ❌          |
+| `get_flag`                  | Read the flag file                                   | ✅          |
+| `reverse_shell <ip> <port>` | Simulated reverse shell launch                       | ❌          |
+| `search_logs <keyword>`     | Search SIEM logs                                     | ❌          |
+| `show_logged_users`         | Show all active sessions                             | ✅          |
+| `deny_ip <ip>`              | Manually block an IP                                 | ✅          |
+| `allow_ip <ip>`             | Remove manually blocked IP                           | ✅          |
+| `sudo_su`                   | Attempt to elevate privileges                        | ❌          |
+| `exit`                      | Close session                                        | ❌          |
+| `help`                      | Show all commands                                    | ❌          |
+
+
+⚠️ Note: Commands like reverse_shell are fully simulated and do not create real shells.
+
+
+4. File Access Control
+
+
+Sensitive files (flag.txt, passwords.txt, todo.txt, hint.txt) are restricted to admin users.
+
+Unauthorized access attempts are logged as SIEM events.
+
+
+5. SIEM Logging
+
+
+All server actions and security events are logged in JSON format, designed to resemble real SOC logs:
+
+{
+  "timestamp": "2025-09-16T14:49:51Z",
+  "event": "LoginFailure",
+  "severity": "warning",
+  "details": {
+    "ip": "127.0.0.1",
+    "attempt": 1
+  }
+}
+
+Logs include timestamp, event type, severity, and details.
+
+monitor_logs() function continuously watches the log file and prints critical/warning events to the console.
+
+✅ ISO 8601 timestamp format is used to match professional SOC standards.
+
+
+6. Honeypots
+
+
+Configurable ports that simulate honeypot services.
+
+Connections to honeypots are logged and denied, teaching the concept of decoy systems in network defense.
+
+
+7. Portfolio Notes
+
+
+This tool was created for educational and portfolio purposes, demonstrating knowledge of:
+
+Python networking and socket programming
+
+Threading and concurrent session management
+
+File access control and logging
+
+Basic SOC concepts
+
+⚠️ Security measures like passwords, MFA codes, and IP blocks are simplified intentionally. This is not a production-ready security tool.
+
+
+CONFIGURATION
+
+
+All settings are located in config.py:
+
+CONFIG = {
+    "PORT": 5555,
+    "LOG_PATH": "logs/siem.log",
+    "FLAG_PATH": "secure/flag.txt",
+    "MAX_ATTEMPTS": 5,
+    "BLOCK_DURATION": 300,  # in seconds
+    "RATE_LIMIT_DELAY": 2,  # in seconds
+    "AUTH": {
+        "user1": "password1",
+        "admin": "adminpass"
+    },
+    "2FA_CODES": {
+        "user1": "123456",
+        "admin": "654321"
+    },
+    "ADMIN_USERS": ["admin"],
+    "SUDO_PASSWORD": "sudo123",
+    "HONEYPOT_PORTS": [8081, 8082]
+}
+
+
+Adjust ports, users, passwords, and honeypots as needed for testing.
+
+
+HOW TO USE 
+
+
+Start the server:
+
+python main.py  --mode server
+
+
+Open another terminal and connect to the server:
+
+python main.py --mode client
+
+
+Or connect using a TCP client (e.g., telnet localhost 5555)
+
+telnet 127.0.0.1 5555
+
+
+Login using credentials from config.py
+
+
+Explore commands with help
+
+
+
+Command Examples & SIEM Log Outputs
+
+Here are some example interactions with the server and the corresponding SIEM logs:
+
+
+| Command                | Example Input                                               | Expected Server Output             | SIEM Log Entry                                                                                                                                        |
+| ---------------------- | ----------------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Login success          | `Username: user1`<br>`Password: password1`<br>`2FA: 123456` | `[+] Access Granted.`              | `{"timestamp": "...", "event": "LoginSuccess", "severity": "info", "details": {"ip": "127.0.0.1", "user": "user1"}}`                                  |
+| Login failure          | `Username: user1`<br>`Password: wrong`                      | `[!] Login failed.`                | `{"timestamp": "...", "event": "LoginFailure", "severity": "warning", "details": {"ip": "127.0.0.1", "attempt": 1}}`                                  |
+| Unauthorized file read | `read_file flag.txt` (user)                                 | `[!] Access Denied. Admin only.`   | `{"timestamp": "...", "event": "UnauthorizedFileAccess", "severity": "warning", "details": {"ip": "127.0.0.1", "user": "user1", "file": "flag.txt"}}` |
+| Sudo fail              | `sudo_su` + wrong password                                  | `[!] Incorrect sudo password.`     | `{"timestamp": "...", "event": "SudoSuFail", "severity": "warning", "details": {"ip": "127.0.0.1", "user": "user1"}}`                                 |
+| Flag access (admin)    | `get_flag`                                                  | `FLAG{example_flag}`               | `{"timestamp": "...", "event": "FlagAccessed", "severity": "critical", "details": {"ip": "127.0.0.1", "user": "admin"}}`                              |
+| Manual IP block        | `deny_ip 192.168.0.5`                                       | `IP 192.168.0.5 manually blocked.` | `{"timestamp": "...", "event": "ManualBlock", "severity": "warning", "details": {"admin": "admin", "ip": "192.168.0.5"}}`                             |
+| Honeypot hit           | Connect to honeypot port 8081                               | `Access Denied. Activity logged.`  | `{"timestamp": "...", "event": "HoneypotConnection", "severity": "warning", "details": {"ip": "192.168.0.10", "port": 8081}}`                         |
+
+
+SCREENSHOT
+
+
+
+
+
+DEVELOPMENT NOTES
+
+
+Written in Python 3.11+
+
+Uses threading for concurrent clients
+
+JSON format logs follow ISO 8601 timestamps for professional SOC compatibility
+
+Designed as a portfolio and educational project
+
+
+SIMPLICITY AND CTF FRIENDLESS
+
+
+Originally developed in 2023 the project is intentionally simple to facilitate onboarding for beginners and to serve as a CTF (Capture The Flag) challenge environment.
+
+Passwords, 2FA codes, and sudo values are deliberately easy so participants can focus on learning defensive detection, logging, and SOC workflows instead of struggling with complex authentication.
+
+You can easily increase challenge/difficulty by editing config.py (stronger passwords, dynamic MFA, stricter rate limits, longer block durations, etc.).
+
+Keep in mind this is not production-grade security — it’s a learning sandbox.
+
+
+
