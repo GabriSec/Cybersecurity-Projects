@@ -196,12 +196,6 @@ Here are some example interactions with the server and the corresponding SIEM lo
 | Honeypot hit           | Connect to honeypot port 8081                               | `Access Denied. Activity logged.`  | `{"timestamp": "...", "event": "HoneypotConnection", "severity": "warning", "details": {"ip": "192.168.0.10", "port": 8081}}`                         |
 
 
-SCREENSHOT
-
-
-
-
-
 DEVELOPMENT NOTES
 
 
