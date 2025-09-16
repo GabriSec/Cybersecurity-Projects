@@ -1,3 +1,0 @@
-- Clean logs
-- Move flag to flag.txt
-- Update user creds
